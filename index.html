@@ -101,7 +101,7 @@ const T=[
 const S={s1:40,p1:20,pn:30,churn:30,np:{"1m":12,"3m":4,"6m":3,"12m":2,"fam":2}};
 const R=n=>Math.round(n), FP=n=>R(n).toLocaleString('ru-RU')+' ₽';
 
-function curM(g){return (g/1.22)-(g*S.s1/100)-(g*S.s1/100*0.302);}
+function curM(g){return (g/1.22)-(g*0.40)-(g*0.40*0.302);}
 function pays(g,n){
   const c=S.churn/100,p1=S.p1/100,pn=S.pn/100;
   return Array.from({length:n},(_,k)=>k===0?g*p1:g*pn*Math.pow(1-c,k));
