@@ -3,92 +3,317 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Strata VPN — Сравнение партнёрских моделей</title>
+<title>Strata VPN — Партнёрская модель</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;background:#242427;color:#E2E8F0;min-height:100vh;padding:24px 16px}
-h1{font-size:20px;font-weight:600;color:#F1F5F9;margin-bottom:4px}
-.subtitle{font-size:13px;color:#94A3B8;margin-bottom:24px}
-.sliders{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px;background:#2E2E32;border-radius:12px;padding:16px}
-.slider-label{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
-.slider-label span:first-child{font-size:11px;color:#94A3B8}
-.slider-val{font-size:13px;font-weight:600;color:#F1F5F9}
-input[type=range]{width:100%;accent-color:#3B82F6;cursor:pointer}
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-bottom:24px}
-.card{background:#2E2E32;border-radius:12px;padding:16px}
-.card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
-.card-title{font-size:15px;font-weight:600;color:#F1F5F9}
-.card-sub{font-size:11px;color:#64748B;margin-top:2px}
-.mult-badge{font-size:12px;font-weight:600;background:#1E3A5F;color:#60A5FA;padding:4px 10px;border-radius:20px;white-space:nowrap}
-.mult-badge.neg{background:#3B1A1A;color:#F87171}
-.npay-box{background:#1C1C1F;border-radius:8px;padding:10px 12px;margin-bottom:12px;border:1px solid #3A3A3E}
-.npay-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;font-size:11px;color:#94A3B8}
-.npay-val{font-size:13px;font-weight:600;color:#F1F5F9}
-.compare{display:flex;gap:8px;margin-bottom:10px}
-.now-box{flex:1;padding:10px;background:#1C1C1F;border-radius:8px;border:1px solid #3A3A3E}
-.now-box .label{font-size:10px;color:#64748B;margin-bottom:4px}
-.now-box .amount{font-size:17px;font-weight:600;color:#94A3B8}
-.now-box .hint{font-size:10px;color:#64748B;margin-top:2px}
-.my-box{flex:1;padding:10px;background:#1E3A5F;border-radius:8px}
-.my-box .label{font-size:10px;color:#60A5FA;margin-bottom:4px}
-.my-box .amount{font-size:17px;font-weight:600;color:#60A5FA}
-.my-box .hint{font-size:10px;color:#60A5FA;margin-top:2px}
-.seller-row{display:flex;justify-content:space-between;align-items:center;background:#1C1C1F;border-radius:8px;padding:8px 12px;margin-bottom:10px;border:1px solid #3A3A3E}
-.seller-row .sl{font-size:11px;color:#94A3B8}
-.seller-row .sv{font-size:13px;font-weight:600;color:#A78BFA}
-.pills-label{font-size:10px;color:#64748B;margin-bottom:6px}
-.pills{display:flex;flex-wrap:wrap;gap:4px}
-.pill{display:flex;flex-direction:column;align-items:center;padding:5px 9px;border-radius:6px;border:1px solid #3A3A3E;min-width:46px}
-.pill .pn{font-size:9px;color:#64748B}
-.pill .pa{font-size:12px;font-weight:600;color:#E2E8F0}
-.loss{font-size:10px;color:#F87171;margin-top:8px;min-height:14px}
-.legend{display:flex;gap:16px;margin-bottom:10px;font-size:11px;color:#94A3B8}
-.legend span{display:flex;align-items:center;gap:5px}
-.legend .dot{width:10px;height:10px;border-radius:3px;display:inline-block}
-.legend .line{width:14px;height:3px;border-radius:2px;display:inline-block}
-canvas{width:100%!important}
-footer{font-size:11px;color:#475569;text-align:center;margin-top:12px;line-height:1.6}
+
+:root{
+  --bg:#060608;
+  --card:#ffffff0d;
+  --card-border:#ffffff14;
+  --card-hover:#ffffff12;
+  --text:#f0f0f0;
+  --muted:#888;
+  --accent:#fff;
+  --blue:#4d9fff;
+  --blue-dim:#4d9fff22;
+  --purple:#a78bfa;
+  --green:#34d399;
+  --red:#f87171;
+  --warning:#fbbf24;
+}
+
+html{scroll-behavior:smooth}
+body{
+  font-family:'DM Sans',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* BG text */
+.bg-text{
+  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+  font-family:'Syne',sans-serif;font-size:min(22vw,260px);font-weight:800;
+  color:#fff;opacity:0.025;white-space:nowrap;pointer-events:none;
+  letter-spacing:-0.04em;z-index:0;user-select:none;
+}
+
+.wrap{position:relative;z-index:1;max-width:1120px;margin:0 auto;padding:0 20px 60px}
+
+/* NAV */
+nav{
+  display:flex;justify-content:center;padding:28px 0 0;
+}
+.nav-pill{
+  display:flex;align-items:center;gap:8px;
+  background:#ffffff0a;border:1px solid #ffffff18;
+  border-radius:50px;padding:8px 8px 8px 20px;
+  backdrop-filter:blur(20px);
+}
+.nav-pill span{font-size:13px;color:#aaa;font-family:'Syne',sans-serif;font-weight:600;letter-spacing:.04em}
+.nav-pill .logo{font-size:13px;color:#fff;font-weight:700;font-family:'Syne',sans-serif}
+.nav-btn{
+  background:#fff;color:#000;border:none;cursor:pointer;
+  border-radius:50px;padding:8px 20px;font-size:13px;font-weight:600;
+  font-family:'DM Sans',sans-serif;transition:opacity .2s;
+}
+.nav-btn:hover{opacity:.85}
+
+/* HERO */
+.hero{text-align:center;padding:64px 0 48px}
+.hero-label{
+  display:inline-block;font-size:11px;font-weight:500;letter-spacing:.12em;
+  text-transform:uppercase;color:#888;border:1px solid #333;
+  border-radius:50px;padding:6px 16px;margin-bottom:20px;
+}
+.hero h1{
+  font-family:'Syne',sans-serif;font-size:clamp(36px,6vw,72px);
+  font-weight:800;line-height:1.05;letter-spacing:-0.03em;color:#fff;
+  margin-bottom:16px;
+}
+.hero p{font-size:16px;color:#777;max-width:480px;margin:0 auto 40px;line-height:1.6}
+
+/* SLIDERS PANEL */
+.sliders-panel{
+  background:var(--card);border:1px solid var(--card-border);
+  border-radius:20px;padding:28px 32px;
+  backdrop-filter:blur(20px);margin-bottom:12px;
+}
+.sliders-title{
+  font-family:'Syne',sans-serif;font-size:11px;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;color:#555;margin-bottom:20px;
+}
+.sliders-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:24px}
+.slider-item{}
+.slider-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+.slider-top label{font-size:12px;color:#666;font-weight:500}
+.slider-top .val{
+  font-family:'DM Sans',sans-serif;font-size:16px;font-weight:700;color:#fff;font-variant-numeric:tabular-nums;
+}
+.slider-top .val.warn{color:var(--red)}
+
+.range-track{position:relative;height:4px;background:#222;border-radius:2px;margin-bottom:4px}
+.range-fill{
+  position:absolute;top:0;left:0;height:100%;background:#fff;
+  border-radius:2px;pointer-events:none;transition:width .1s;
+}
+.range-fill.warn{background:var(--red)}
+input[type=range]{
+  -webkit-appearance:none;appearance:none;
+  width:100%;height:4px;background:transparent;
+  position:relative;cursor:pointer;outline:none;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;appearance:none;
+  width:16px;height:16px;border-radius:50%;background:#fff;
+  box-shadow:0 0 0 3px #ffffff22;cursor:pointer;transition:transform .15s;
+}
+input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2)}
+input[type=range].warn::-webkit-slider-thumb{background:var(--red)}
+
+.limit-warn{
+  display:none;font-size:11px;color:var(--red);margin-top:16px;
+  padding:8px 14px;background:#f8717111;border:1px solid #f8717133;
+  border-radius:8px;text-align:center;
+}
+.limit-warn.show{display:block}
+
+/* CARDS */
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:20px}
+
+.card{
+  background:var(--card);border:1px solid var(--card-border);
+  border-radius:20px;padding:24px;backdrop-filter:blur(20px);
+  transition:border-color .25s,background .25s;position:relative;overflow:hidden;
+}
+.card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,#ffffff22,transparent);
+}
+.card:hover{border-color:#ffffff28;background:var(--card-hover)}
+
+.card-tag{
+  font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  color:#555;margin-bottom:12px;
+}
+.card-price{
+  font-family:'Syne',sans-serif;font-size:28px;font-weight:800;
+  color:#fff;letter-spacing:-0.02em;margin-bottom:4px;
+}
+.card-price span{font-size:14px;font-weight:400;color:#555}
+.mult{
+  display:inline-flex;align-items:center;gap:6px;
+  font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;
+  font-variant-numeric:tabular-nums;
+  padding:5px 14px;border-radius:50px;margin-bottom:20px;
+  letter-spacing:0;
+}
+.mult.pos{background:linear-gradient(135deg,#4d9fff33,#4d9fff22);color:#7bb8ff;border:1px solid #4d9fff44;box-shadow:0 0 16px #4d9fff18}
+.mult.neg{background:#f8717114;color:var(--red);border:1px solid #f8717133}
+
+.divider{height:1px;background:#ffffff0a;margin:18px 0}
+
+.npay-row{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:8px;
+}
+.npay-label{font-size:11px;color:#555;font-weight:500}
+.npay-val{font-size:13px;font-weight:700;color:#fff;font-family:'DM Sans',sans-serif;font-variant-numeric:tabular-nums}
+input.np-range{width:100%;margin-bottom:16px}
+
+.compare{display:flex;gap:8px;margin-bottom:14px}
+.now-side,.our-side{flex:1;padding:10px 12px;border-radius:12px}
+.now-side{background:#ffffff07;border:1px solid #ffffff0f}
+.our-side{background:#4d9fff14;border:1px solid #4d9fff33}
+.side-label{font-size:10px;color:#555;margin-bottom:4px;font-weight:500}
+.our-side .side-label{color:#4d9fff88}
+.side-amt{font-family:'DM Sans',sans-serif;font-size:18px;font-weight:700;font-variant-numeric:tabular-nums}
+.now-side .side-amt{color:#888}
+.our-side .side-amt{color:var(--blue)}
+.side-sub{font-size:10px;color:#444;margin-top:2px}
+.our-side .side-sub{color:#4d9fff66}
+
+.seller-line{
+  display:flex;justify-content:space-between;align-items:center;
+  background:#ffffff06;border:1px solid #ffffff0a;
+  border-radius:10px;padding:8px 12px;margin-bottom:14px;
+}
+.seller-line .sl{font-size:11px;color:#555}
+.seller-line .sv{font-size:13px;font-weight:700;color:var(--purple);font-family:'DM Sans',sans-serif;font-variant-numeric:tabular-nums}
+
+.pills-label{font-size:10px;color:#444;margin-bottom:8px;font-weight:500;letter-spacing:.04em;text-transform:uppercase}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{
+  display:flex;flex-direction:column;align-items:center;
+  padding:6px 10px;border-radius:10px;
+  border:1px solid #ffffff0f;background:#ffffff06;min-width:44px;
+  transition:opacity .2s;
+}
+.pill .pn{font-size:9px;color:#444;margin-bottom:2px;font-weight:600;letter-spacing:.06em}
+.pill .pa{font-size:12px;font-weight:700;color:#ddd;font-family:'DM Sans',sans-serif;font-variant-numeric:tabular-nums}
+
+.loss{font-size:10px;color:var(--red);margin-top:10px;min-height:12px;opacity:.8}
+.card-range-wrap{position:relative;margin-bottom:16px}
+.card-range-track{position:relative;height:4px;background:#2a2a2a;border-radius:2px;margin-bottom:0;pointer-events:none}
+.card-range-fill{position:absolute;top:0;left:0;height:100%;background:#ffffff88;border-radius:2px;pointer-events:none;transition:width .1s}
+input.np-range{
+  -webkit-appearance:none;appearance:none;
+  position:absolute;top:-6px;left:0;width:100%;
+  height:16px;background:transparent;cursor:pointer;outline:none;margin:0;
+}
+input.np-range::-webkit-slider-thumb{
+  -webkit-appearance:none;appearance:none;
+  width:16px;height:16px;border-radius:50%;background:#fff;
+  box-shadow:0 0 0 3px #ffffff22;cursor:pointer;transition:transform .15s;
+}
+input.np-range::-webkit-slider-thumb:hover{transform:scale(1.2)}
+
+/* CHART */
+.chart-section{
+  background:var(--card);border:1px solid var(--card-border);
+  border-radius:20px;padding:28px 32px;backdrop-filter:blur(20px);
+}
+.chart-header{
+  display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;
+}
+.chart-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:#fff;letter-spacing:-.01em}
+.legend{display:flex;gap:16px}
+.legend span{display:flex;align-items:center;gap:6px;font-size:11px;color:#666}
+.ldot{width:8px;height:8px;border-radius:2px;display:inline-block}
+.lline{width:14px;height:2px;border-radius:2px;display:inline-block}
+
+.footer-note{text-align:center;font-size:11px;color:#333;margin-top:20px;line-height:1.7}
 </style>
 </head>
 <body>
 
-<h1>Strata VPN — Партнёрская модель</h1>
-<p class="subtitle">Текущая модель vs. предложение Strata VPN — двигайте ползунки чтобы менять условия</p>
+<div class="bg-text">STRATA</div>
 
-<div class="sliders">
-  <div>
-    <div class="slider-label"><span>% продавцу (1-я опл.)</span><span class="slider-val" id="s1-out">40%</span></div>
-    <input type="range" id="s1" min="0" max="80" step="1" value="40">
+<div class="wrap">
+  <nav>
+    <div class="nav-pill">
+      <span class="logo">Strata VPN</span>
+      <span style="color:#333;margin:0 4px">·</span>
+      <span>Партнёрская программа</span>
+      <button class="nav-btn" onclick="window.print()">Сохранить PDF</button>
+    </div>
+  </nav>
+
+  <div class="hero">
+    <div class="hero-label">Калькулятор доходности</div>
+    <h1>Партнёрская<br>модель</h1>
+    <p>Текущая модель vs. предложение Strata VPN — двигайте ползунки чтобы менять условия</p>
   </div>
-  <div>
-    <div class="slider-label"><span>% сети (1-я опл.)</span><span class="slider-val" id="p1-out">20%</span></div>
-    <input type="range" id="p1" min="0" max="80" step="1" value="20">
+
+  <div class="sliders-panel">
+    <div class="sliders-title">Параметры программы</div>
+    <div class="sliders-grid">
+
+      <div class="slider-item">
+        <div class="slider-top">
+          <label>% продавцу (1-я опл.)</label>
+          <span class="val" id="s1-out">40%</span>
+        </div>
+        <div class="range-track"><div class="range-fill" id="s1-fill" style="width:50%"></div></div>
+        <input type="range" id="s1" min="0" max="100" step="1" value="40">
+      </div>
+
+      <div class="slider-item">
+        <div class="slider-top">
+          <label>% сети (1-я опл.)</label>
+          <span class="val" id="p1-out">20%</span>
+        </div>
+        <div class="range-track"><div class="range-fill" id="p1-fill" style="width:25%"></div></div>
+        <input type="range" id="p1" min="0" max="100" step="1" value="20">
+      </div>
+
+      <div class="slider-item">
+        <div class="slider-top">
+          <label>% сети (посл. оплаты)</label>
+          <span class="val" id="pn-out">30%</span>
+        </div>
+        <div class="range-track"><div class="range-fill" id="pn-fill" style="width:37.5%"></div></div>
+        <input type="range" id="pn" min="0" max="100" step="1" value="30">
+      </div>
+
+      <div class="slider-item">
+        <div class="slider-top">
+          <label>Отток клиентов</label>
+          <span class="val" id="churn-out" style="color:var(--warning)">30%</span>
+        </div>
+        <div class="range-track"><div class="range-fill" id="churn-fill" style="width:37.5%"></div></div>
+        <input type="range" id="churn" min="0" max="80" step="1" value="30">
+      </div>
+
+    </div>
+    <div class="limit-warn" id="limit-warn">
+      ⚠ Сумма % продавцу и % сети (1-я оплата) не может превышать 100%
+    </div>
   </div>
-  <div>
-    <div class="slider-label"><span>% сети (посл. оплаты)</span><span class="slider-val" id="pn-out">30%</span></div>
-    <input type="range" id="pn" min="0" max="80" step="1" value="30">
+
+  <div class="cards-grid" id="cards"></div>
+
+  <div class="chart-section">
+    <div class="chart-header">
+      <div class="chart-title">Сравнение заработка партнёра</div>
+      <div class="legend">
+        <span><span class="lline" style="background:#555"></span>Текущая модель</span>
+        <span><span class="ldot" style="background:var(--blue)"></span>Наше предложение</span>
+      </div>
+    </div>
+    <div style="position:relative;height:240px"><canvas id="ch"></canvas></div>
   </div>
-  <div>
-    <div class="slider-label"><span>Отток клиентов</span><span class="slider-val" id="churn-out" style="color:#FBBF24">30%</span></div>
-    <input type="range" id="churn" min="0" max="80" step="1" value="30">
-  </div>
+
+  <p class="footer-note">
+    Текущая модель: партнёр получает деньги от клиента, сам платит продавцу и несёт налоги.<br>
+    Наше предложение: сеть получает % от каждой оплаты — продавца и все налоги оплачиваем мы.
+  </p>
 </div>
-
-<div class="cards" id="cards"></div>
-
-<div class="legend">
-  <span><span class="line" style="background:#6B7280"></span>Текущая модель</span>
-  <span><span class="dot" style="background:#3B82F6"></span>Наше предложение (с оттоком)</span>
-</div>
-<div style="position:relative;height:260px;margin-bottom:8px">
-  <canvas id="ch"></canvas>
-</div>
-
-<footer>
-  Текущая модель: партнёр получает деньги от клиента, сам платит продавцу и налоги.<br>
-  Наше предложение: сеть получает % от каждой оплаты — продавца и налоги оплачиваем мы.
-</footer>
 
 <script>
 const T=[
@@ -98,9 +323,10 @@ const T=[
   {k:'12m',l:'12 мес', g:2490, p:12},
   {k:'fam',l:'Family', g:4490, p:12},
 ];
-const S={s1:40,p1:20,pn:30,churn:30,np:{"1m":12,"3m":4,"6m":3,"12m":2,"fam":2}};
+const S={s1:40,p1:20,pn:30,churn:30,np:{'1m':12,'3m':4,'6m':3,'12m':2,'fam':2}};
 const R=n=>Math.round(n), FP=n=>R(n).toLocaleString('ru-RU')+' ₽';
 
+// Фиксированные 40% для текущей модели
 function curM(g){return (g/1.22)-(g*0.40)-(g*0.40*0.302);}
 function pays(g,n){
   const c=S.churn/100,p1=S.p1/100,pn=S.pn/100;
@@ -109,56 +335,80 @@ function pays(g,n){
 function total(g,n){return pays(g,n).reduce((s,v)=>s+v,0);}
 function sellerAmt(g){return R(g*S.s1/100);}
 
+// Проверка лимита
+function checkLimit(){
+  const over=S.s1+S.p1>100;
+  document.getElementById('limit-warn').classList.toggle('show',over);
+  ['s1','p1'].forEach(id=>{
+    const fill=document.getElementById(id+'-fill');
+    const inp=document.getElementById(id);
+    if(over){fill.classList.add('warn');inp.classList.add('warn');}
+    else{fill.classList.remove('warn');inp.classList.remove('warn');}
+  });
+  return over;
+}
+
 let chart=null;
 
 function buildCards(){
   const c=document.getElementById('cards'); c.innerHTML='';
   T.forEach(t=>{
     const np=S.np[t.k],cur=curM(t.g),ps=pays(t.g,np),mine=ps.reduce((s,v)=>s+v,0);
-    const noC=t.g*S.p1/100+(np>1?t.g*S.pn/100*(np-1):0),lost=noC-mine,mult=cur>0?mine/cur:0;
+    const noC=t.g*S.p1/100+(np>1?t.g*S.pn/100*(np-1):0);
+    const lost=noC-mine,mult=cur>0?mine/cur:0;
     const seller=sellerAmt(t.g);
     const card=document.createElement('div'); card.className='card';
     card.innerHTML=`
-      <div class="card-header">
-        <div><div class="card-title">${t.l}</div><div class="card-sub">${t.g.toLocaleString('ru-RU')} ₽ / ${t.p===1?'мес':t.p+' мес'}</div></div>
-        <span id="mult-${t.k}" class="mult-badge ${mult<1?'neg':''}">×${mult.toFixed(1)}</span>
+      <div class="card-tag">${t.p===1?'мес':t.p+' мес'} · ${t.g.toLocaleString('ru-RU')} ₽</div>
+      <div class="card-price">${t.l}</div>
+      <div class="mult ${mult>=1?'pos':'neg'}" id="mult-${t.k}">
+        ${mult>=1?'↑':'↓'} ×${mult.toFixed(1)} к текущей
       </div>
-      <div class="npay-box">
-        <div class="npay-row"><span>Оплат с партнёром</span><span class="npay-val" id="no-${t.k}">${np} опл.</span></div>
-        <input type="range" id="np-${t.k}" min="1" max="12" step="1" value="${np}">
+      <div class="npay-row">
+        <span class="npay-label">Оплат с партнёром</span>
+        <span class="npay-val" id="no-${t.k}">${np}</span>
+      </div>
+      <div class="card-range-wrap" style="height:16px;margin-bottom:16px">
+        <div class="card-range-track"><div class="card-range-fill" id="nf-${t.k}" style="width:${(np-1)/11*100}%"></div></div>
+        <input type="range" class="np-range" id="np-${t.k}" min="1" max="12" step="1" value="${np}">
       </div>
       <div class="compare">
-        <div class="now-box">
-          <div class="label">Сейчас</div>
-          <div id="cur-${t.k}" class="amount">${FP(cur)}</div>
-          <div class="hint">разово</div>
+        <div class="now-side">
+          <div class="side-label">Сейчас</div>
+          <div id="cur-${t.k}" class="side-amt">${FP(cur)}</div>
+          <div class="side-sub">разово</div>
         </div>
-        <div class="my-box">
-          <div class="label">Наше предложение</div>
-          <div id="mine-${t.k}" class="amount">${FP(mine)}</div>
-          <div id="nl-${t.k}" class="hint">${np} опл.</div>
+        <div class="our-side">
+          <div class="side-label">Наше предложение</div>
+          <div id="mine-${t.k}" class="side-amt">${FP(mine)}</div>
+          <div id="nl-${t.k}" class="side-sub">${np} оплат</div>
         </div>
       </div>
-      <div class="seller-row">
-        <span class="sl">Продавец получает (1-я опл.)</span>
+      <div class="seller-line">
+        <span class="sl">Продавец (1-я оплата)</span>
         <span id="sel-${t.k}" class="sv">${FP(seller)}</span>
       </div>
-      <div class="pills-label">Ожидаемые выплаты сети:</div>
+      <div class="pills-label">Выплаты сети</div>
       <div id="pg-${t.k}" class="pills"></div>
-      <div id="ls-${t.k}" class="loss">${S.churn>0&&np>1?`Потеря от оттока: −${FP(lost)} (${R(lost/noC*100)}% от идеала)`:''}</div>
+      <div id="ls-${t.k}" class="loss">${S.churn>0&&np>1?`−${FP(lost)} от оттока (${R(lost/noC*100)}%)`:''}</div>
     `;
     c.appendChild(card);
     fillPills(t.k,ps);
-    card.querySelector('#np-'+t.k).addEventListener('input',e=>{S.np[t.k]=+e.target.value;updateCard(t.k);updateChart();});
+    card.querySelector('#np-'+t.k).addEventListener('input',e=>{
+      S.np[t.k]=+e.target.value;
+      const f=document.getElementById('nf-'+t.k);
+      if(f) f.style.width=((S.np[t.k]-1)/11*100)+'%';
+      updateCard(t.k);updateChart();
+    });
   });
 }
 
 function fillPills(key,ps){
   const grid=document.getElementById('pg-'+key); grid.innerHTML='';
   (ps||pays(T.find(x=>x.k===key).g,S.np[key])).forEach((p,k)=>{
-    const op=Math.max(0.28,Math.pow(1-S.churn/100,k)),d=document.createElement('div');
-    d.className='pill'; d.style.opacity=op;
-    d.innerHTML=`<span class="pn">${k+1}-я</span><span class="pa">${R(p)} ₽</span>`;
+    const op=Math.max(0.2,Math.pow(1-S.churn/100,k));
+    const d=document.createElement('div'); d.className='pill'; d.style.opacity=op;
+    d.innerHTML=`<span class="pn">${k+1}-я</span><span class="pa">${R(p)}₽</span>`;
     grid.appendChild(d);
   });
 }
@@ -166,48 +416,99 @@ function fillPills(key,ps){
 function updateCard(key){
   const t=T.find(x=>x.k===key),np=S.np[key],cur=curM(t.g),ps=pays(t.g,np),mine=ps.reduce((s,v)=>s+v,0);
   const noC=t.g*S.p1/100+(np>1?t.g*S.pn/100*(np-1):0),lost=noC-mine,mult=cur>0?mine/cur:0;
-  document.getElementById('no-'+key).textContent=np+' опл.';
+  document.getElementById('no-'+key).textContent=np;
   const mb=document.getElementById('mult-'+key);
-  mb.textContent='×'+mult.toFixed(1); mb.className='mult-badge'+(mult<1?' neg':'');
+  mb.textContent=(mult>=1?'↑ ×':'↓ ×')+mult.toFixed(1)+' к текущей';
+  mb.className='mult '+(mult>=1?'pos':'neg');
   document.getElementById('mine-'+key).textContent=FP(mine);
-  document.getElementById('nl-'+key).textContent=np+' опл.';
+  document.getElementById('nl-'+key).textContent=np+' оплат';
   document.getElementById('cur-'+key).textContent=FP(cur);
   document.getElementById('sel-'+key).textContent=FP(sellerAmt(t.g));
-  document.getElementById('ls-'+key).textContent=S.churn>0&&np>1?`Потеря от оттока: −${FP(lost)} (${R(lost/noC*100)}% от идеала)`:'';
+  document.getElementById('ls-'+key).textContent=S.churn>0&&np>1?`−${FP(lost)} от оттока (${R(lost/noC*100)}%)`:'';
   fillPills(key,ps);
 }
 
 function updateChart(){
   const cv=T.map(t=>R(curM(t.g))),mv=T.map(t=>R(total(t.g,S.np[t.k])));
   if(chart){chart.data.datasets[0].data=cv;chart.data.datasets[1].data=mv;chart.update('none');}
-  else{chart=new Chart(document.getElementById('ch'),{type:'bar',data:{labels:T.map(t=>t.l),datasets:[
-    {label:'Текущая модель',data:cv,backgroundColor:'rgba(107,114,128,0.5)',borderColor:'#6B7280',borderWidth:1,borderRadius:5},
-    {label:'Наше предложение',data:mv,backgroundColor:'rgba(59,130,246,0.7)',borderColor:'#3B82F6',borderWidth:1,borderRadius:5},
-  ]},options:{responsive:true,maintainAspectRatio:false,
-    plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.dataset.label+': '+R(c.parsed.y).toLocaleString('ru-RU')+' ₽'}}},
-    scales:{
-      x:{grid:{display:false},ticks:{font:{size:12},color:'#94A3B8'}},
-      y:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{font:{size:11},color:'#94A3B8',callback:v=>v>=1000?(v/1000).toFixed(0)+'К':v}}
-    }
-  }});}
+  else{
+    chart=new Chart(document.getElementById('ch'),{type:'bar',data:{labels:T.map(t=>t.l),datasets:[
+      {label:'Текущая модель',data:cv,backgroundColor:'#ffffff0f',borderColor:'#ffffff1a',borderWidth:1,borderRadius:8},
+      {label:'Наше предложение',data:mv,backgroundColor:'#4d9fff33',borderColor:'#4d9fff',borderWidth:1,borderRadius:8},
+    ]},options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{
+        backgroundColor:'#111',borderColor:'#333',borderWidth:1,
+        callbacks:{label:c=>c.dataset.label+': '+R(c.parsed.y).toLocaleString('ru-RU')+' ₽'}}},
+      scales:{
+        x:{grid:{display:false},ticks:{font:{size:12,family:'Syne'},color:'#555'}},
+        y:{grid:{color:'#ffffff08'},border:{dash:[4,4]},ticks:{font:{size:11},color:'#555',callback:v=>v>=1000?(v/1000).toFixed(0)+'К':v}}
+      }
+    }});
+  }
 }
 
-function updateAll(){
+// SLIDER LOGIC с защитой от превышения 100%
+function setFill(id,pct){
+  const fill=document.getElementById(id+'-fill');
+  if(fill) fill.style.width=Math.min(pct,100)+'%';
+}
+
+document.getElementById('s1').addEventListener('input',e=>{
+  S.s1=+e.target.value;
+  // Ограничиваем p1 если сумма > 100
+  if(S.s1+S.p1>100){
+    S.p1=100-S.s1;
+    document.getElementById('p1').value=S.p1;
+    setFill('p1',S.p1);
+    document.getElementById('p1-out').textContent=S.p1+'%';
+  }
+  setFill('s1',S.s1);
   document.getElementById('s1-out').textContent=S.s1+'%';
+  checkLimit(); updateAll();
+});
+
+document.getElementById('p1').addEventListener('input',e=>{
+  S.p1=+e.target.value;
+  // Если сумма > 100 — снижаем s1
+  if(S.s1+S.p1>100){
+    S.s1=100-S.p1;
+    document.getElementById('s1').value=S.s1;
+    setFill('s1',S.s1);
+    document.getElementById('s1-out').textContent=S.s1+'%';
+  }
+  setFill('p1',S.p1);
   document.getElementById('p1-out').textContent=S.p1+'%';
+  checkLimit(); updateAll();
+});
+
+document.getElementById('pn').addEventListener('input',e=>{
+  S.pn=+e.target.value;
+  setFill('pn',S.pn);
   document.getElementById('pn-out').textContent=S.pn+'%';
+  updateAll();
+});
+
+document.getElementById('churn').addEventListener('input',e=>{
+  S.churn=+e.target.value;
+  setFill('churn',S.churn/80*100);
   const ce=document.getElementById('churn-out');
   ce.textContent=S.churn+'%';
-  ce.style.color=S.churn===0?'#34D399':S.churn<30?'#FBBF24':'#F87171';
+  ce.style.color=S.churn===0?'var(--green)':S.churn<30?'var(--warning)':'var(--red)';
+  updateAll();
+});
+
+function updateAll(){
   T.forEach(t=>updateCard(t.k));
   updateChart();
 }
 
-['s1','p1','pn','churn'].forEach(id=>{
-  document.getElementById(id).addEventListener('input',e=>{S[id]=+e.target.value;updateAll();});
-});
+// Init fills
+setFill('s1',40);
+setFill('p1',20);
+setFill('pn',30);
+setFill('churn',30/80*100);
 
-buildCards(); updateChart();
+buildCards(); updateChart(); checkLimit();
 </script>
 </body>
 </html>
