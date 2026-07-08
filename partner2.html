@@ -146,10 +146,10 @@ input.np-range::-webkit-slider-thumb:hover{transform:scale(1.2)}
       <div>
         <div class="slider-top">
           <label>% сети (1-я оплата)</label>
-          <span class="val" id="p1-out">20%</span>
+          <span class="val" id="p1-out">60%</span>
         </div>
-        <div class="range-track"><div class="range-fill" id="p1-fill" style="width:20%"></div></div>
-        <input type="range" id="p1" min="0" max="100" step="1" value="20">
+        <div class="range-track"><div class="range-fill" id="p1-fill" style="width:60%"></div></div>
+        <input type="range" id="p1" min="0" max="100" step="1" value="60">
       </div>
       <div>
         <div class="slider-top">
@@ -235,7 +235,7 @@ const T=[
   {k:'12m',l:'12 мес', g:2490, p:12, mix:0.07},
   {k:'fam',l:'Family', g:4490, p:12, mix:0.03},
 ];
-const S={p1:20,pn:30,churn:30,upm:500,np:{'1m':12,'3m':4,'6m':3,'12m':2,'fam':2}};
+const S={p1:60,pn:30,churn:30,upm:500,np:{'1m':12,'3m':4,'6m':3,'12m':2,'fam':2}};
 const R=n=>Math.round(n);
 const FP=n=>R(n).toLocaleString('ru-RU')+' ₽';
 const FN=n=>R(n).toLocaleString('ru-RU');
@@ -412,7 +412,7 @@ document.getElementById('upm').addEventListener('input',e=>{
   updateIncome();
 });
 
-setFill('p1',20); setFill('pn',30); setFill('churn',30/80*100); setFill('upm',(500-200)/3800*100);
+setFill('p1',60); setFill('pn',30); setFill('churn',30/80*100); setFill('upm',(500-200)/3800*100);
 buildCards(); updateChart(); updateIncome();
 </script>
 </body>
