@@ -105,6 +105,9 @@ input.np-range{-webkit-appearance:none;appearance:none;position:absolute;top:0;l
 input.np-range::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 0 0 3px #ffffff22;cursor:pointer;transition:transform .15s;}
 input.np-range::-webkit-slider-thumb:hover{transform:scale(1.2)}
 
+.seller-line{display:flex;justify-content:space-between;align-items:center;background:#ffffff06;border:1px solid #ffffff0a;border-radius:10px;padding:8px 12px;margin-bottom:14px;}
+.seller-line .sl{font-size:11px;color:#555}
+.seller-line .sv{font-size:13px;font-weight:700;color:#a78bfa;font-family:'DM Sans',sans-serif;font-variant-numeric:tabular-nums}
 .pills-label{font-size:10px;color:#444;margin-bottom:8px;font-weight:500;letter-spacing:.04em;text-transform:uppercase}
 .pills{display:flex;flex-wrap:wrap;gap:6px}
 .pill{display:flex;flex-direction:column;align-items:center;padding:6px 10px;border-radius:10px;border:1px solid #ffffff0f;background:#ffffff06;min-width:44px;transition:opacity .2s;}
@@ -201,6 +204,11 @@ input.np-range::-webkit-slider-thumb:hover{transform:scale(1.2)}
         <div class="income-num" id="inc-y2">—</div>
         <div class="income-sub">включая оплаты годовых тарифов</div>
       </div>
+      <div class="income-item">
+        <div class="income-label" style="color:#a78bfa99">Выплаты продавцам / мес</div>
+        <div class="income-num" id="inc-sel" style="color:#a78bfa">—</div>
+        <div class="income-sub" style="color:#a78bfa66">уже вычтено из цифр выше</div>
+      </div>
     </div>
     <div class="income-chart-wrap"><canvas id="inc-chart"></canvas></div>
     <div class="mix-note">
@@ -229,22 +237,24 @@ input.np-range::-webkit-slider-thumb:hover{transform:scale(1.2)}
 
 <script>
 const T=[
-  {k:'1m', l:'1 мес',  g:290,  p:1,  mix:0.50},
-  {k:'3m', l:'3 мес',  g:749,  p:3,  mix:0.25},
-  {k:'6m', l:'6 мес',  g:1390, p:6,  mix:0.15},
-  {k:'12m',l:'12 мес', g:2490, p:12, mix:0.07},
-  {k:'fam',l:'Family', g:4490, p:12, mix:0.03},
+  {k:'1m', l:'1 мес',  g:290,  p:1,  mix:0.50, sr:0.05},
+  {k:'3m', l:'3 мес',  g:749,  p:3,  mix:0.25, sr:0.05},
+  {k:'6m', l:'6 мес',  g:1390, p:6,  mix:0.15, sr:0.10},
+  {k:'12m',l:'12 мес', g:2490, p:12, mix:0.07, sr:0.10},
+  {k:'fam',l:'Family', g:4490, p:12, mix:0.03, sr:0.10},
 ];
 const S={p1:60,pn:30,churn:30,upm:500,np:{'1m':12,'3m':4,'6m':3,'12m':2,'fam':2}};
 const R=n=>Math.round(n);
 const FP=n=>R(n).toLocaleString('ru-RU')+' ₽';
 const FN=n=>R(n).toLocaleString('ru-RU');
 
-function pays(g,n){
+function pays(t,n){
   const c=S.churn/100,p1=S.p1/100,pn=S.pn/100;
-  return Array.from({length:n},(_,k)=>k===0?g*p1:g*pn*Math.pow(1-c,k));
+  return Array.from({length:n},(_,k)=>k===0?t.g*(p1-t.sr):t.g*pn*Math.pow(1-c,k));
 }
-function total(g,n){return pays(g,n).reduce((s,v)=>s+v,0);}
+function total(t,n){return pays(t,n).reduce((s,v)=>s+v,0);}
+function sellerAmt(t){return t.g*t.sr;}
+function sellerMonthly(){return T.reduce((s,t)=>s+S.upm*t.mix*t.g*t.sr,0);}
 
 // Помесячный доход партнёра: когорты по 24 мес
 function monthlyIncome(){
@@ -262,7 +272,7 @@ function monthlyIncome(){
         const payNum=period+1;
         if(payNum>np) continue;
         const frac=Math.pow(ret,period);
-        if(payNum===1) inc+=cohort*t.g*p1;
+        if(payNum===1) inc+=cohort*t.g*(p1-t.sr);
         else inc+=cohort*frac*t.g*pn;
       }
     });
@@ -276,8 +286,8 @@ let chart=null, incChart=null;
 function buildCards(){
   const c=document.getElementById('cards'); c.innerHTML='';
   T.forEach(t=>{
-    const np=S.np[t.k],ps=pays(t.g,np),mine=ps.reduce((s,v)=>s+v,0);
-    const noC=t.g*S.p1/100+(np>1?t.g*S.pn/100*(np-1):0),lost=noC-mine;
+    const np=S.np[t.k],ps=pays(t,np),mine=ps.reduce((s,v)=>s+v,0);
+    const noC=t.g*(S.p1/100-t.sr)+(np>1?t.g*S.pn/100*(np-1):0),lost=noC-mine;
     const card=document.createElement('div'); card.className='card';
     card.innerHTML=`
       <div class="card-tag">${t.g.toLocaleString('ru-RU')} ₽ / ${t.p===1?'мес':t.p+' мес'}</div>
@@ -286,6 +296,10 @@ function buildCards(){
         <div class="offer-label">Наше предложение</div>
         <div id="mine-${t.k}" class="offer-amount">${FP(mine)}</div>
         <div id="nl-${t.k}" class="offer-sub">${np} оплат · с учётом оттока</div>
+      </div>
+      <div class="seller-line">
+        <span class="sl">Выплата продавцу (${R(t.sr*100)}% · 1-я опл.)</span>
+        <span class="sv">${FP(sellerAmt(t))}</span>
       </div>
       <div class="npay-row">
         <span class="npay-label">Оплат с партнёром</span>
@@ -312,7 +326,7 @@ function buildCards(){
 
 function fillPills(key,ps){
   const grid=document.getElementById('pg-'+key); grid.innerHTML='';
-  (ps||pays(T.find(x=>x.k===key).g,S.np[key])).forEach((p,k)=>{
+  (ps||pays(T.find(x=>x.k===key),S.np[key])).forEach((p,k)=>{
     const op=Math.max(0.2,Math.pow(1-S.churn/100,k));
     const d=document.createElement('div'); d.className='pill'; d.style.opacity=op;
     d.innerHTML=`<span class="pn">${k+1}-я</span><span class="pa">${R(p)}₽</span>`;
@@ -321,8 +335,8 @@ function fillPills(key,ps){
 }
 
 function updateCard(key){
-  const t=T.find(x=>x.k===key),np=S.np[key],ps=pays(t.g,np),mine=ps.reduce((s,v)=>s+v,0);
-  const noC=t.g*S.p1/100+(np>1?t.g*S.pn/100*(np-1):0),lost=noC-mine;
+  const t=T.find(x=>x.k===key),np=S.np[key],ps=pays(t,np),mine=ps.reduce((s,v)=>s+v,0);
+  const noC=t.g*(S.p1/100-t.sr)+(np>1?t.g*S.pn/100*(np-1):0),lost=noC-mine;
   document.getElementById('no-'+key).textContent=np;
   document.getElementById('mine-'+key).textContent=FP(mine);
   document.getElementById('nl-'+key).textContent=np+' оплат · с учётом оттока';
@@ -331,8 +345,8 @@ function updateCard(key){
 }
 
 function updateChart(){
-  const first=T.map(t=>R(t.g*S.p1/100));
-  const tots=T.map(t=>R(total(t.g,S.np[t.k])));
+  const first=T.map(t=>R(t.g*(S.p1/100-t.sr)));
+  const tots=T.map(t=>R(total(t,S.np[t.k])));
   if(chart){
     chart.data.datasets[0].data=first;
     chart.data.datasets[1].data=tots;
@@ -360,6 +374,7 @@ function updateIncome(){
   document.getElementById('inc-m12').textContent=FP(m12);
   document.getElementById('inc-y1').textContent=FP(y1);
   document.getElementById('inc-y2').textContent=FP(y2);
+  document.getElementById('inc-sel').textContent=FP(sellerMonthly());
 
   const labels=arr.map((_,i)=>'М'+(i+1));
   if(incChart){
